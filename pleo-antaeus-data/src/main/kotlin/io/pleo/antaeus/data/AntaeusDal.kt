@@ -78,7 +78,7 @@ class AntaeusDal(private val db: Database) {
         return fetchCustomer(id!!)
     }
 
-    fun fetchinvoiceChargeStatus(id: Int): InvoiceChargeStatus? {
+    fun fetchInvoiceChargeStatus(id: Int): InvoiceChargeStatus? {
         return transaction(db) {
             // Returns the first InvoiceChargeStatus with matching id.
             InvoiceChargeStatusTable
@@ -88,7 +88,7 @@ class AntaeusDal(private val db: Database) {
         }
     }
 
-    fun createInvoiceStatus(customerId : Int, event : TransactionStatus, invoiceId : Int) : InvoiceChargeStatus? {
+    fun createInvoiceChargeStatus(customerId : Int, event : TransactionStatus, invoiceId : Int) : InvoiceChargeStatus? {
         val id = transaction(db) {
             InvoiceChargeStatusTable
                     .insert {
@@ -98,10 +98,10 @@ class AntaeusDal(private val db: Database) {
                         it[this.invoiceId] = invoiceId
                     } get InvoiceChargeStatusTable.id
         }
-        return fetchinvoiceChargeStatus(id!!)
+        return fetchInvoiceChargeStatus(id!!)
     }
 
-    fun fetchinvoiceChargeStatuses(): List<InvoiceChargeStatus> {
+    fun fetchInvoiceChargeStatuses(): List<InvoiceChargeStatus> {
         return transaction(db) {
             InvoiceChargeStatusTable
                     .selectAll()
