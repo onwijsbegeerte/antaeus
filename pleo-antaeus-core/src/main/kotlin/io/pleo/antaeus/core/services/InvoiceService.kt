@@ -27,8 +27,8 @@ class InvoiceService(private val dal: AntaeusDal) {
         return dal.fetchInvoiceChargeStatuses()
     }
 
-    fun fetchInvoiceChargeStatus(id: Int) : InvoiceChargeStatus? {
-        return dal.fetchInvoiceChargeStatus(id)
+    fun fetchInvoiceChargeStatus(id: Int) : InvoiceChargeStatus {
+        return dal.fetchInvoiceChargeStatus(id) ?: throw InvoiceNotFoundException(id)
     }
 
     fun createInvoiceChargeStatus(invoice: Invoice, transactionStatus : TransactionStatus) : InvoiceChargeStatus? {
