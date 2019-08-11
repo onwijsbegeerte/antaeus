@@ -101,5 +101,11 @@ class AntaeusDal(private val db: Database) {
         return fetchinvoiceChargeStatus(id!!)
     }
 
-
+    fun fetchinvoiceChargeStatuses(): List<InvoiceChargeStatus> {
+        return transaction(db) {
+            InvoiceChargeStatusTable
+                    .selectAll()
+                    .map { it.toInvoiceChargeStatus() }
+        }
+    }
 }
