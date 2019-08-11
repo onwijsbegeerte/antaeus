@@ -19,3 +19,11 @@ object CustomerTable : Table() {
     val id = integer("id").autoIncrement().primaryKey()
     val currency = varchar("currency", 3)
 }
+
+object InvoiceChargeStatusTable : Table() {
+    val id = integer("id").autoIncrement().primaryKey()
+    val transactionStatus = text("transactionStatus")
+    val created = datetime("created")
+    val invoiceId = reference("invoice_id", InvoiceTable.id)
+    val customerId = reference("customer_id", CustomerTable.id)
+}

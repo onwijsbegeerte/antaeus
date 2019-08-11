@@ -7,16 +7,13 @@
 
 package io.pleo.antaeus.data
 
-import io.pleo.antaeus.models.Currency
-import io.pleo.antaeus.models.Customer
-import io.pleo.antaeus.models.Invoice
-import io.pleo.antaeus.models.InvoiceStatus
-import io.pleo.antaeus.models.Money
+import io.pleo.antaeus.models.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 
 class AntaeusDal(private val db: Database) {
     fun fetchInvoice(id: Int): Invoice? {
@@ -80,4 +77,29 @@ class AntaeusDal(private val db: Database) {
 
         return fetchCustomer(id!!)
     }
+
+    fun fetchinvoiceChargeStatus(id: Int): InvoiceChargeStatus? {
+        return transaction(db) {
+            // Returns the first InvoiceChargeStatus with matching id.
+            InvoiceChargeStatusTable
+                    .select { InvoiceChargeStatusTable.id.eq(id) }
+                    .firstOrNull()
+                    ?.toInvoiceChargeStatus()
+        }
+    }
+
+    fun createInvoiceStatus(customerId : Int, event : TransactionStatus, invoiceId : Int) : InvoiceChargeStatus? {
+        val id = transaction(db) {
+            InvoiceChargeStatusTable
+                    .insert {
+                        it[this.created] = DateTime.now()
+                        it[this.customerId] = customerId
+                        it[this.transactionStatus] = event.toString()
+                        it[this.invoiceId] = invoiceId
+                    } get InvoiceChargeStatusTable.id
+        }
+        return fetchinvoiceChargeStatus(id!!)
+    }
+
+
 }
