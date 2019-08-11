@@ -11,6 +11,7 @@ docker run \
   --rm \
   --interactive \
   --tty \
-  # This volume is only there so incremental builds are way faster
   --volume pleo-antaeus-build-cache:/root/.gradle \
   pleo-antaeus
+
+# This volume is only there so incremental builds are way faster
