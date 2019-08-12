@@ -11,26 +11,15 @@ class BillingService(
 ) {
 
     fun chargeAllInvoices() {
-        val unpaidInvoices =
-                invoiceService
-                        .fetchAll()
-                        .filter { it -> it.status == InvoiceStatus.PENDING }
+        var unpaidInvoices = invoiceService.fetchAll().filter { it -> it.status == InvoiceStatus.PENDING }
 
-        charge(unpaidInvoices)
-    }
-
-    private fun charge(unpaidInvoices : List<Invoice>) {
-        unpaidInvoices
-                .forEach { it -> chargeAllInvoices(it, paymentProvider::charge, invoiceService::payInvoice)}
-
-        val stillUnpaidInvoices = invoiceService.fetchAll().filter { it -> it.status == InvoiceStatus.PENDING }
-        if (stillUnpaidInvoices.any()){
-
-            charge(stillUnpaidInvoices)
+        while (unpaidInvoices.any()){
+            unpaidInvoices.forEach { chargeInvoice(it, paymentProvider::charge, invoiceService::payInvoice) }
+            unpaidInvoices = invoiceService.fetchAll().filter { it -> it.status == InvoiceStatus.PENDING }
         }
     }
 
-    private fun chargeAllInvoices(invoice: Invoice, tryPayInvoice: (Invoice) -> Boolean, updateInvoice: (Invoice) -> Invoice) {
+    private fun chargeInvoice(invoice: Invoice, tryPayInvoice: (Invoice) -> Boolean, updateInvoice: (Invoice) -> Invoice) {
 
         invoiceService.createInvoiceChargeStatus(invoice, TransactionStatus.Attempted)
 

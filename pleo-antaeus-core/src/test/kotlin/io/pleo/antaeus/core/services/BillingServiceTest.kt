@@ -19,7 +19,7 @@ class BillingServiceTest {
 
         val dal = mockk<AntaeusDal> {
             every { fetchInvoices() } returns listOf(Invoice(1, 2, Money(10.toBigDecimal(), Currency.DKK), InvoiceStatus.PAID ))
-            every { createInvoiceChargeStatus(any<Int>(), any(), any<Int>() )} returns InvoiceChargeStatus(Random.nextInt(), Random.nextInt(), Random.nextInt(), TransactionStatus.Attempted, LocalDate.now().toString())
+            every { createInvoiceChargeStatus(any(), any(), any() )} returns InvoiceChargeStatus(Random.nextInt(), Random.nextInt(), Random.nextInt(), TransactionStatus.Attempted, LocalDate.now().toString())
             every { payInvoice(any())} returns Invoice(1, 2, Money(10.toBigDecimal(), Currency.DKK), InvoiceStatus.PAID )
         }
 
@@ -38,9 +38,10 @@ class BillingServiceTest {
     @Test
     fun `Attempting to charging customers, with some unpaid invoices, should attempt to charge customer`() {
 
+        val invoice = Invoice(1, 2, Money(10.toBigDecimal(), Currency.DKK), InvoiceStatus.PENDING )
         val dal = mockk<AntaeusDal> {
-            every { fetchInvoices() } returns listOf(Invoice(1, 2, Money(10.toBigDecimal(), Currency.DKK), InvoiceStatus.PENDING )) andThen listOf()
-            every { createInvoiceChargeStatus(any<Int>(), any(), any<Int>() )} returns InvoiceChargeStatus(Random.nextInt(), Random.nextInt(), Random.nextInt(), TransactionStatus.Attempted, LocalDate.now().toString())
+            every { fetchInvoices() } returns listOf(invoice) andThen listOf()
+            every { createInvoiceChargeStatus(any(), any(), any() )} returns InvoiceChargeStatus(Random.nextInt(), Random.nextInt(), Random.nextInt(), TransactionStatus.Attempted, LocalDate.now().toString())
             every { payInvoice(any())} returns Invoice(1, 2, Money(10.toBigDecimal(), Currency.DKK), InvoiceStatus.PAID )
         }
 
@@ -52,7 +53,7 @@ class BillingServiceTest {
 
         billingService.chargeAllInvoices()
 
-        verify(exactly = 1) { mockPaymentProvider.charge(any()) }
+        verify(exactly = 1) { mockPaymentProvider.charge(invoice) }
         confirmVerified(mockPaymentProvider)
     }
 
