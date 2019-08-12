@@ -10,13 +10,17 @@ class BillingService(
     private val invoiceService: InvoiceService
 ) {
 
-    fun chargeAllInvoices() {
+    fun chargeAllInvoices(): List<Invoice> {
         var unpaidInvoices = invoiceService.fetchAll().filter { it -> it.status == InvoiceStatus.PENDING }
 
         while (unpaidInvoices.any()){
             unpaidInvoices.forEach { chargeInvoice(it, paymentProvider::charge, invoiceService::payInvoice) }
             unpaidInvoices = invoiceService.fetchAll().filter { it -> it.status == InvoiceStatus.PENDING }
+
+            unpaidInvoices = InvoiceChargeLimiter(unpaidInvoices, invoiceService.fetchAllInvoiceStatuses(), 4)
         }
+
+        return invoiceService.fetchAll().filter { it -> it.status == InvoiceStatus.PENDING }
     }
 
     private fun chargeInvoice(invoice: Invoice, tryPayInvoice: (Invoice) -> Boolean, updateInvoice: (Invoice) -> Invoice) {

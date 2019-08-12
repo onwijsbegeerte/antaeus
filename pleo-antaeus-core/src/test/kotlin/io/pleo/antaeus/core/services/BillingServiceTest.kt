@@ -21,6 +21,7 @@ class BillingServiceTest {
             every { fetchInvoices() } returns listOf(Invoice(1, 2, Money(10.toBigDecimal(), Currency.DKK), InvoiceStatus.PAID ))
             every { createInvoiceChargeStatus(any(), any(), any() )} returns InvoiceChargeStatus(Random.nextInt(), Random.nextInt(), Random.nextInt(), TransactionStatus.Attempted, LocalDate.now().toString())
             every { payInvoice(any())} returns Invoice(1, 2, Money(10.toBigDecimal(), Currency.DKK), InvoiceStatus.PAID )
+            every { fetchAllInvoiceChargeStatuses()} returns listOf()
         }
 
         val mockPaymentProvider = mockk<PaymentProvider>{
@@ -43,6 +44,7 @@ class BillingServiceTest {
             every { fetchInvoices() } returns listOf(invoice) andThen listOf()
             every { createInvoiceChargeStatus(any(), any(), any() )} returns InvoiceChargeStatus(Random.nextInt(), Random.nextInt(), Random.nextInt(), TransactionStatus.Attempted, LocalDate.now().toString())
             every { payInvoice(any())} returns Invoice(1, 2, Money(10.toBigDecimal(), Currency.DKK), InvoiceStatus.PAID )
+            every { fetchAllInvoiceChargeStatuses()} returns listOf()
         }
 
         val mockPaymentProvider = mockk<PaymentProvider>{
@@ -64,6 +66,7 @@ class BillingServiceTest {
             every { fetchInvoices() } returns listOf(Invoice(1, 2, Money(10.toBigDecimal(), Currency.DKK), InvoiceStatus.PENDING )) andThen listOf()
             every { createInvoiceChargeStatus(any(), any(), any() )} returns InvoiceChargeStatus(Random.nextInt(), Random.nextInt(), Random.nextInt(), TransactionStatus.Attempted, LocalDate.now().toString())
             every { payInvoice(any())} returns Invoice(1, 2, Money(10.toBigDecimal(), Currency.DKK), InvoiceStatus.PAID )
+            every { fetchAllInvoiceChargeStatuses()} returns listOf()
         }
 
         val mockPaymentProvider = mockk<PaymentProvider>{
