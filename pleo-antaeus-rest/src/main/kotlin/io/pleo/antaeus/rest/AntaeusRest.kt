@@ -69,7 +69,7 @@ class AntaeusRest (
                            it.json(invoiceService.fetchAllInvoiceStatuses())
                        }
 
-                       // URL: /rest/v1/invoices/chargestatus/
+                       // URL: /rest/v1/invoices/chargestatus/{:id}
                        get("chargestatus/:id"){
                            it.json(invoiceService.fetchInvoiceChargeStatuses(it.pathParam("id").toInt()))
                        }
