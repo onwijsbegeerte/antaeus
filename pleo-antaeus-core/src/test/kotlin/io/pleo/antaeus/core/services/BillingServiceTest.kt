@@ -36,7 +36,7 @@ class BillingServiceTest {
     }
 
     @Test
-    fun `Attempting to charging customers, some unpaid invoices, should attempt to charge customer`() {
+    fun `Attempting to charging customers, with some unpaid invoices, should attempt to charge customer`() {
 
         val dal = mockk<AntaeusDal> {
             every { fetchInvoices() } returns listOf(Invoice(1, 2, Money(10.toBigDecimal(), Currency.DKK), InvoiceStatus.PENDING )) andThen listOf()
@@ -54,5 +54,26 @@ class BillingServiceTest {
 
         verify(exactly = 1) { mockPaymentProvider.charge(any()) }
         confirmVerified(mockPaymentProvider)
+    }
+
+    @Test
+    fun `Attempting to charging customers, with some unpaid invoices charged success, should add attempted and success`() {
+
+        val dal = mockk<AntaeusDal> {
+            every { fetchInvoices() } returns listOf(Invoice(1, 2, Money(10.toBigDecimal(), Currency.DKK), InvoiceStatus.PENDING )) andThen listOf()
+            every { createInvoiceChargeStatus(any(), any(), any() )} returns InvoiceChargeStatus(Random.nextInt(), Random.nextInt(), Random.nextInt(), TransactionStatus.Attempted, LocalDate.now().toString())
+            every { payInvoice(any())} returns Invoice(1, 2, Money(10.toBigDecimal(), Currency.DKK), InvoiceStatus.PAID )
+        }
+
+        val mockPaymentProvider = mockk<PaymentProvider>{
+            every { charge(any()) } returns true
+        }
+
+        val billingService = BillingService(mockPaymentProvider, InvoiceService(dal))
+
+        billingService.chargeAllInvoices()
+
+        verify(exactly = 1) { dal.createInvoiceChargeStatus(2, TransactionStatus.Attempted, 1) }
+        verify(exactly = 1) { dal.createInvoiceChargeStatus(2, TransactionStatus.Success, 1) }
     }
 }
