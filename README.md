@@ -101,6 +101,14 @@ Happy hacking 😁!
 4. You can investigate what happened by using the ```/rest/v1/invoices/chargestatus/{:id}``` endpoint. You’ll see that 4 attempts were made, but they all failed.
 5. Call ```rest/v1/invoices/chargestatuses``` again, to attempt an additional charge.
 
+
+## docker cronjob
+
+In the ```./cron-job``` directory of Antaeus is a small example of a container running a cronjob. Although I think managing it in Kubernetes would be better.
+executing ```docker-compose up``` in ```./cron-job``` will run the "monthly-charge-invoice" bash script, a really simple curl from within the network to the Antheus charge endpoint. For demo-purposes it runs every
+minute. If you uncomment the monthly cronjob instead, it will run on the first of each month.
+
+
 ## Notes/Considerations
 
 I first looked at using the ScheduledExecutorService from the Java library. Although it was flexible enough to do it in theory, there were a couple of things I didn’t like.
