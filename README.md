@@ -102,10 +102,10 @@ Happy hacking 😁!
 5. Call ```rest/v1/invoices/chargestatuses``` again, to attempt an additional charge.
 
 
-## docker cronjob
+## Docker cronjob
 
 In the ```./cron-job``` directory of Antaeus is a small example of a container running a cronjob. Although I think managing it in Kubernetes would be better.
-executing ```docker-compose up``` in ```./cron-job``` will run the "monthly-charge-invoice" bash script, a really simple curl from within the network to the Antheus charge endpoint. For demo-purposes it runs every
+Executing ```docker-compose up``` in ```./cron-job``` will run the "monthly-charge-invoice" bash script, a really simple curl from within the network to the Antheus charge endpoint. For demo-purposes it runs every
 minute. If you uncomment the monthly cronjob instead, it will run on the first of each month.
 
 
